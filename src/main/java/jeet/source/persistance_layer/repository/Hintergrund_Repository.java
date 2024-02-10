@@ -1,9 +1,11 @@
 package jeet.source.persistance_layer.repository;
 
+import jeet.source.logic_layer.entity.pattern_helper.HintergrundUpdateVisitor;
 import jeet.source.logic_layer.entity.PersistentEntity;
 import jeet.source.logic_layer.entity.persistent_entity.Hintergrund;
 import jeet.source.logic_layer.entity.persistent_entity.HintergrundBild;
 import jeet.source.logic_layer.entity.persistent_entity.HintergrundFarbe;
+import jeet.source.logic_layer.entity.pattern_helper.HintergrundAddVisitor;
 import jeet.source.persistance_layer.DatabaseUtils;
 import jeet.source.persistance_layer.RepoCollection;
 import jeet.source.persistance_layer.Repository;
@@ -15,7 +17,7 @@ import java.util.Comparator;
 import java.util.List;
 
 // TODO : Ist das sinnvoll?
-public class Hintergrund_Repository implements Repository<Hintergrund> {
+public class Hintergrund_Repository implements Repository<Hintergrund>, HintergrundAddVisitor, HintergrundUpdateVisitor {
 
     @Override
     public List<Hintergrund> getAll() {
@@ -34,19 +36,26 @@ public class Hintergrund_Repository implements Repository<Hintergrund> {
 
     @Override
     public Hintergrund getByID(long id_input) {
-        return null;
+        Hintergrund bild  = RepoCollection.hintergrundBild.getByID(id_input);
+        Hintergrund farbe = RepoCollection.hintergrundFarbe.getByID(id_input);
+
+        if (bild  == null && farbe == null) return null;
+        if (bild  == null) return farbe;
+        if (farbe == null) return bild;
+
+        throw new RuntimeException("Ungültige Werte in Datenbank.");
     }
     // delegieren
 
     @Override
     public Hintergrund add(Hintergrund entity) {
-        return null;
+        return entity.acceptAdd(this);
     }
     // delegieren
 
     @Override
     public void update(Hintergrund entity) {
-
+        entity.acceptUpdate(this);
     }
     //delegieren
 
@@ -74,4 +83,29 @@ public class Hintergrund_Repository implements Repository<Hintergrund> {
 
     }
 
+    //------------------------------------------------------------------------------------------------------------------
+
+    @Override
+    public HintergrundBild visitAdd(HintergrundBild bild) {
+        //System.out.println("Bild hinzugefügt");
+        return RepoCollection.hintergrundBild.add(bild);
+    }
+
+    @Override
+    public HintergrundFarbe visitAdd(HintergrundFarbe farbe) {
+        //System.out.println("Farbe hinzugefügt");
+        return RepoCollection.hintergrundFarbe.add(farbe);
+    }
+
+    @Override
+    public void visitUpdate(HintergrundBild bild) {
+        //System.out.println("Bild aktualisiert");
+        RepoCollection.hintergrundBild.update(bild);
+    }
+
+    @Override
+    public void visitUpdate(HintergrundFarbe farbe) {
+        //System.out.println("Farbe aktualisiert");
+        RepoCollection.hintergrundFarbe.update(farbe);
+    }
 }

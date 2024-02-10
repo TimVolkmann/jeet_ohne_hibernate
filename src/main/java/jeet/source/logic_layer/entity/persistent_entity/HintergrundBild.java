@@ -1,5 +1,8 @@
 package jeet.source.logic_layer.entity.persistent_entity;
 
+import jeet.source.logic_layer.entity.pattern_helper.HintergrundUpdateVisitor;
+import jeet.source.logic_layer.entity.pattern_helper.HintergrundAddVisitor;
+
 import java.io.File;
 import java.util.Objects;
 
@@ -54,6 +57,17 @@ public class HintergrundBild extends Hintergrund {
 
     //------------------------------------------------------------------------------------------------------------------
 
+    @Override
+    public Hintergrund acceptAdd(HintergrundAddVisitor visitor) {
+        return visitor.visitAdd(this);
+    }
+
+    @Override
+    public void acceptUpdate(HintergrundUpdateVisitor visitor) {
+        visitor.visitUpdate(this);
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
 
     @Override
     public String toString() {

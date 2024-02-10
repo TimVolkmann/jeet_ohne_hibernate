@@ -93,7 +93,7 @@ class Hintergrund_RepositoryTest {
         HintergrundFarbe farbe = (HintergrundFarbe) RepoCollection.hintergrund.getByID(2);
         HintergrundBild  bild  = (HintergrundBild)  RepoCollection.hintergrund.getByID(5);
 
-        bild.setName("neu");
+        bild.setName("neu.jpg");
         farbe.setFarbe(Color.BLACK);
 
         RepoCollection.hintergrund.update(bild);

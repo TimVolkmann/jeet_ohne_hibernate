@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import java.io.*;
 
 /*
  * Methodensammlung, um BLOBs und File's ineinander zu konvertieren.
@@ -28,6 +30,19 @@ public class BlobHandling {
             fos.write(bytes);
         }
         return file;
+    }
+
+    public static byte[] pddocumentToBytes(PDDocument pdDocument) throws IOException {
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            pdDocument.save(byteArrayOutputStream);
+            return byteArrayOutputStream.toByteArray();
+        }
+    }
+
+    public static PDDocument bytesToPDDocument(byte[] bytes) throws IOException {
+        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes)) {
+            return PDDocument.load(byteArrayInputStream);
+        }
     }
 
 }

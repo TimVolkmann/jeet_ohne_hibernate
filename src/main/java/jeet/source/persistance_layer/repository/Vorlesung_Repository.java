@@ -2,6 +2,7 @@ package jeet.source.persistance_layer.repository;
 
 import jeet.source.logic_layer.entity.persistent_entity.Lehrveranstaltung;
 import jeet.source.logic_layer.entity.persistent_entity.Vorlesung;
+import jeet.source.persistance_layer.BlobHandling;
 import jeet.source.persistance_layer.DatabaseUtils;
 import jeet.source.persistance_layer.RepoCollection;
 import jeet.source.persistance_layer.Repository;
@@ -23,7 +24,7 @@ public class Vorlesung_Repository implements Repository<Vorlesung> {
     public List<Vorlesung> getAll() {
 
         List<Vorlesung> result = new ArrayList<>();
-        String query = "SELECT VorlesungID, LehrveranstaltungID, Name, Autor, Datum, Nummer " +
+        String query = "SELECT VorlesungID, LehrveranstaltungID, Name, Autor, Datum, Nummer, PDFDatei" +
                 "FROM Vorlesung";
 
         try (PreparedStatement stmt = DatabaseUtils.getConnection().prepareStatement(query)) {
@@ -35,10 +36,11 @@ public class Vorlesung_Repository implements Repository<Vorlesung> {
                     String autor = rs.getString("Autor");
                     String datum = rs.getString("Datum");
                     int nummer = rs.getInt("Nummer");
+                    byte[] pdfDatei = rs.getBytes("PDFDatei");
 
                     Lehrveranstaltung lv = RepoCollection.lehrveranstaltung.getByID(id_lv);
 
-                    result.add(new Vorlesung(id_vl, lv, name, autor, LocalDate.parse(datum), nummer));
+                    result.add(new Vorlesung(id_vl, lv, name, autor, LocalDate.parse(datum), nummer, BlobHandling.bytesToPDDocument(pdfDatei)));
                 }
             } catch (SQLException e) {
                 DatabaseUtils.rollback(e);
@@ -53,7 +55,7 @@ public class Vorlesung_Repository implements Repository<Vorlesung> {
     @Override
     public Vorlesung getByID(long id_input) {
         Vorlesung result = null;
-        String query = "SELECT VorlesungID, LehrveranstaltungID, Name, Autor, Datum, Nummer " +
+        String query = "SELECT VorlesungID, LehrveranstaltungID, Name, Autor, Datum, Nummer, PDFDatei" +
                 "FROM Vorlesung " +
                 "WHERE VorlesungID = ?";
 
@@ -69,10 +71,11 @@ public class Vorlesung_Repository implements Repository<Vorlesung> {
                 String autor = rs.getString("Autor");
                 String datum = rs.getString("Datum");
                 int nummer = rs.getInt("Nummer");
+                byte[] pdfDatei = rs.getBytes("PDFDatei");
 
                 Lehrveranstaltung lv = RepoCollection.lehrveranstaltung.getByID(id_lv);
 
-                result = new Vorlesung(id_vl, lv, name, autor, LocalDate.parse(datum), nummer);
+                result = new Vorlesung(id_vl, lv, name, autor, LocalDate.parse(datum), nummer, BlobHandling.bytesToPDDocument(pdfDatei));
             } catch (SQLException e) {
                 DatabaseUtils.rollback(e);
             }
@@ -86,8 +89,8 @@ public class Vorlesung_Repository implements Repository<Vorlesung> {
     @Override
     public Vorlesung add(Vorlesung entity) {
         Vorlesung result = null;
-        String query = "INSERT INTO Vorlesung (LehrveranstaltungID, Name, Autor, Datum, Nummer) " +
-                "Values (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Vorlesung (LehrveranstaltungID, Name, Autor, Datum, Nummer, PDFDatei) " +
+                "Values (?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = DatabaseUtils.getConnection().prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -96,6 +99,7 @@ public class Vorlesung_Repository implements Repository<Vorlesung> {
             stmt.setString(3, entity.getAutor());
             stmt.setString(4, entity.getDatum().toString());
             stmt.setInt(5, entity.getNummer());
+            stmt.setBytes(6, BlobHandling.pddocumentToBytes(entity.getPdfFile()));
 
             try { // Insert
                 stmt.executeUpdate();
@@ -125,6 +129,7 @@ public class Vorlesung_Repository implements Repository<Vorlesung> {
                     "Autor = ?, " +
                     "Datum = ?, " +
                     "Nummer = ? " +
+                    "PDFDatei = ? " +
                 "WHERE VorlesungID = ?";
 
         try {
@@ -135,8 +140,9 @@ public class Vorlesung_Repository implements Repository<Vorlesung> {
                 stmt.setString(3, entity.getAutor());
                 stmt.setString(4, entity.getDatum().toString());
                 stmt.setInt(5, entity.getNummer());
+                stmt.setBytes(6, BlobHandling.pddocumentToBytes(entity.getPdfFile()));
 
-                stmt.setLong(6, entity.getID());
+                stmt.setLong(7, entity.getID());
 
                 stmt.executeUpdate();
 

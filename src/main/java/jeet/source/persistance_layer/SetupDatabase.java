@@ -57,6 +57,7 @@ public class SetupDatabase {
                 "Autor TEXT," +
                 "Datum TEXT," +
                 "Nummer INTEGER," +
+                "PDFDatei BLOB," +
                 "FOREIGN KEY (LehrveranstaltungID) REFERENCES Lehrveranstaltung(LehrveranstaltungID));";
 
         try(PreparedStatement stmt = DatabaseUtils.getConnection(path).prepareStatement(queryVL)) {

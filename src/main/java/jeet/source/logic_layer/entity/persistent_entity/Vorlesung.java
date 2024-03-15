@@ -1,6 +1,7 @@
 package jeet.source.logic_layer.entity.persistent_entity;
 
 import jeet.source.logic_layer.entity.PersistentEntity;
+import org.apache.pdfbox.pdmodel.PDDocument;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -12,23 +13,25 @@ public class Vorlesung extends PersistentEntity {
     private String autor;
     private LocalDate datum;
     private int nummer;
-    // pdfFile
+    private PDDocument pdfFile;
 
-    public Vorlesung(Lehrveranstaltung lv, String name, String autor, LocalDate datum, int nummer) {
+    public Vorlesung(Lehrveranstaltung lv, String name, String autor, LocalDate datum, int nummer, PDDocument pdfFile) {
         this.name = name;
         this.autor = autor;
         this.lv = lv;
         this.datum = datum;
         this.nummer = nummer;
+        this.pdfFile = pdfFile;
     }
 
-    public Vorlesung(long id, Lehrveranstaltung lv, String name, String autor, LocalDate datum, int nummer) {
+    public Vorlesung(long id, Lehrveranstaltung lv, String name, String autor, LocalDate datum, int nummer, PDDocument pdfFile) {
         this.id = id;
         this.lv = lv;
         this.name = name;
         this.autor = autor;
         this.datum = datum;
         this.nummer = nummer;
+        this.pdfFile = pdfFile;
     }
 
     public Vorlesung(long id, Vorlesung entity) {
@@ -38,6 +41,8 @@ public class Vorlesung extends PersistentEntity {
         this.autor = entity.getAutor();
         this.datum = entity.getDatum();
         this.nummer = entity.getNummer();
+        this.pdfFile = entity.getPdfFile();
+
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -61,6 +66,11 @@ public class Vorlesung extends PersistentEntity {
     public int getNummer() {
         return nummer;
     }
+
+    public PDDocument getPdfFile() {
+        return pdfFile;
+    }
+
     //------------------------------------------------------------------------------------------------------------------
 
     public void setName(String name) {
@@ -83,6 +93,10 @@ public class Vorlesung extends PersistentEntity {
         this.nummer = nummer;
     }
 
+    public void setPdfFile(PDDocument pdfFile) {
+        this.pdfFile = pdfFile;
+    }
+
     //------------------------------------------------------------------------------------------------------------------
 
     @Override
@@ -94,6 +108,7 @@ public class Vorlesung extends PersistentEntity {
         sb.append("\tautor  = ").append(autor).append("\n");
         sb.append("\tdatum  = ").append(datum).append("\n");
         sb.append("\tnummer = ").append(nummer).append("\n");
+        sb.append("\tpdfFile = ").append(pdfFile).append("\n");
         return sb.toString();
     }
 
@@ -106,11 +121,12 @@ public class Vorlesung extends PersistentEntity {
                 Objects.equals(getName(), vorlesung.getName()) &&
                 Objects.equals(getAutor(), vorlesung.getAutor()) &&
                 Objects.equals(getDatum(), vorlesung.getDatum()) &&
-                Objects.equals(getNummer(), vorlesung.getNummer());
+                Objects.equals(getNummer(), vorlesung.getNummer()) &&
+                Objects.equals(getPdfFile(), vorlesung.getPdfFile());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getID(), getLv(), getName(), getAutor(), getDatum(), getNummer());
+        return Objects.hash(getID(), getLv(), getName(), getAutor(), getDatum(), getNummer(), getPdfFile());
     }
 }

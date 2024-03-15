@@ -8,7 +8,7 @@ import java.util.List;
  * Repository parametrisiert durch den eigenen Typ. Nur die konkreten Repos enthalten SQL.
  */
 public interface Repository<T extends PersistentEntity> {
-    List<T> getAll();
+    List<T> getAll(); // TODO : weg, nur in manchen repos
     T getByID(long id_input);
     T add(T entity);
     void update(T entity);
